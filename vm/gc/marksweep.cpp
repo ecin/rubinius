@@ -16,6 +16,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include "provider.h"
+
 namespace rubinius {
 
   MarkSweepGC::MarkSweepGC(ObjectMemory *om, Configuration& config)
@@ -34,9 +36,11 @@ namespace rubinius {
   void MarkSweepGC::free_objects() {
     std::list<Object*>::iterator i;
 
+	RUBINIUS_GC_START();
     for(i = entries.begin(); i != entries.end(); ++i) {
       free_object(*i, true);
     }
+	RUBINIUS_GC_END();
   }
 
   Object* MarkSweepGC::allocate(size_t bytes, bool *collect_now) {

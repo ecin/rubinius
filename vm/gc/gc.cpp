@@ -22,6 +22,9 @@
 
 #include "object_watch.hpp"
 
+// Dtrace probe header
+#include "provider.h"
+
 namespace rubinius {
 
   GCData::GCData(STATE)
