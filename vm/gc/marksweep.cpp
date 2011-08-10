@@ -36,11 +36,15 @@ namespace rubinius {
   void MarkSweepGC::free_objects() {
     std::list<Object*>::iterator i;
 
+#ifdef RBX_DTRACE
 	RUBINIUS_GC_START();
+#endif
     for(i = entries.begin(); i != entries.end(); ++i) {
       free_object(*i, true);
     }
+#ifdef RBX_DTRACE
 	RUBINIUS_GC_END();
+#endif
   }
 
   Object* MarkSweepGC::allocate(size_t bytes, bool *collect_now) {
