@@ -86,6 +86,9 @@ class Configure
     # Library configuration
     @rb_readline = false
 
+    # Dtrace configuration
+    @dtrace = false
+
     # Essential settings (modify these for creating releases)
     @libversion = "1.2"
     @version = "#{@libversion}.5dev"
@@ -815,6 +818,7 @@ module Rubinius
     :user_ldflags   => "#{@user_ldflags}",
     :defines        => #{@defines.inspect},
     :curses         => #{@curses.inspect},
+    :dtrace         => #{@dtrace},
     :host           => "#{@host}",
     :cpu            => "#{@cpu}",
     :vendor         => "#{@vendor}",

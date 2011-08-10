@@ -101,9 +101,17 @@ namespace :build do
     end
   end
 
+  desc "Generate header file for Dtrace probes"
+  task :dtrace do
+    if Rubinius::BUILD_CONFIG[:dtrace]
+      sh "cd vm; dtrace -h -s provider.d"
+    end
+  end
+
   # Issue the actual build commands. NEVER USE DIRECTLY.
   task :build => %w[
                      build:llvm
+                     build:dtrace
                      vm/vm
                      kernel:build
                      build:ffi:preprocessor
