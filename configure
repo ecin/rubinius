@@ -722,6 +722,30 @@ int main() { return tgetnum(""); }
     return status
   end
 
+  def has_constant(name, includes=[])
+    @log.print "Checking for constant '#{name}': "
+
+    src = <<-EOP
+#{includes.map {|i| "#include <#{i}>" }.join("\n")}
+int main() {
+#ifdef #{name}
+  return 0;
+#endif
+
+return 1;
+}
+    EOP
+
+    status = check_program do |f|
+      f.puts src
+      @log.log src
+    end
+
+    success = status == 0
+    success ? @log.write("found!") : @log.write("not found.")
+    return success
+  end
+
   def detect_features
     if @features["execinfo"] and has_function("backtrace", ["execinfo.h"])
       @defines << "HAS_EXECINFO"
@@ -735,8 +759,11 @@ int main() { return tgetnum(""); }
     if @features["ruby-readline"] or !@defines.include?("HAS_READLINE")
       @rb_readline = true
     end
-    
-    if @features["dtrace"] and has_function("dtrace_status", ["dtrace.h"])
+
+    # Check for DTRACE constants defined in 'sdt.h'. Works for OS X. FreeBSD support
+    # is commented out until further testing. Might relax this check and simply search
+    # for '/usr/sbin/dtrace' to support SystemTap's Dtrace compatibility on Linux systems.
+    if @features["dtrace"] and has_constant("DTRACE_CALL", ["sys/sdt.h"]) # or has_constant("DTRACE_PROBE", ["sys/sdt.h"])
       @dtrace = true
     end
   end
@@ -881,7 +908,7 @@ end
       if @tr1_hash
         f.puts "#define RBX_HAVE_TR1_HASH 1"
       end
-      
+
       if @dtrace
         f.puts "#define RBX_DTRACE 1"
       end
@@ -917,7 +944,7 @@ end
       if @tr1_hash
         f.puts "#define RBX_HAVE_TR1_HASH 1"
       end
-      
+
       if @dtrace
         f.puts "#define RBX_DTRACE 1"
       end
